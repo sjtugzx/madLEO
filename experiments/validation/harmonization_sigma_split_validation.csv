@@ -1,0 +1,4 @@
+sigma_eval_group,sigma_model,sample_count,median_residual_km,within_3sigma_fraction
+fit,base=0.376km growth=0.302km/24h,266,0.4816050045054894,0.9548872180451128
+eval_contemporary,base=0.376km growth=0.302km/24h,195,0.545686321822407,0.9692307692307692
+eval_historical,base=0.376km growth=0.302km/24h,265,0.592454374811978,0.8415094339622642

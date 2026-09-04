@@ -1,0 +1,4 @@
+source,start_epoch,end_epoch,span_hours,row_count,satellite_count,cadence_median_seconds,gap_count,max_gap_hours,null_state_rows
+ephemeris,2024-11-26T06:00:42Z,2024-11-30T16:59:42Z,106.9833,43361358,6785,60.0,0,0.0,0
+tle,2024-11-26T06:00:02Z,2024-11-30T16:59:59.947000Z,106.9994,51475,6684,39468.474,7919,71.9179,0
+ephemeris_tle_overlap,2024-11-26T06:00:42Z,2024-11-30T16:59:42Z,106.9833,,,,,,

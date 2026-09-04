@@ -1,0 +1,208 @@
+{
+  "release_name": "external_benchmark_comparison",
+  "targets": [
+    {
+      "sat_id": "sentinel-3a",
+      "track": "validated",
+      "date_range": {
+        "start": "2023-01-01",
+        "end": "2026-04-15"
+      },
+      "sources": {
+        "pod": {
+          "enabled": true,
+          "provider": "cdse_sentinel3",
+          "satellite": "S3A",
+          "product_type": "AUX_POEORB",
+          "output_dir": "data/raw/reference_validation/sentinel-3a/pod"
+        },
+        "slr": {
+          "enabled": true,
+          "provider": "ilrs",
+          "satellite": "sentinel-3a",
+          "data_type": "npt",
+          "output_dir": "data/raw/reference_validation/sentinel-3a/slr"
+        },
+        "tle": {
+          "enabled": true,
+          "provider": "spacetrack",
+          "norad": "41335",
+          "output_dir": "data/raw/reference_validation/sentinel-3a/tle"
+        }
+      }
+    },
+    {
+      "sat_id": "jason-3",
+      "track": "validated",
+      "date_range": {
+        "start": "2023-01-01",
+        "end": "2026-04-15"
+      },
+      "sources": {
+        "pod": {
+          "enabled": true,
+          "provider": "podaac_jason3",
+          "output_dir": "data/raw/reference_validation/jason-3/pod"
+        },
+        "slr": {
+          "enabled": true,
+          "provider": "ilrs",
+          "satellite": "jason-3",
+          "data_type": "npt",
+          "output_dir": "data/raw/reference_validation/jason-3/slr"
+        },
+        "tle": {
+          "enabled": true,
+          "provider": "spacetrack",
+          "norad": "41240",
+          "output_dir": "data/raw/reference_validation/jason-3/tle"
+        }
+      }
+    },
+    {
+      "sat_id": "sentinel-3b",
+      "track": "validated",
+      "date_range": {
+        "start": "2023-01-01",
+        "end": "2026-04-15"
+      },
+      "sources": {
+        "pod": {
+          "enabled": true,
+          "provider": "cdse_sentinel3",
+          "satellite": "S3B",
+          "product_type": "AUX_POEORB",
+          "output_dir": "data/raw/reference_validation/sentinel-3b/pod"
+        },
+        "slr": {
+          "enabled": true,
+          "provider": "ilrs",
+          "satellite": "sentinel-3b",
+          "data_type": "npt",
+          "output_dir": "data/raw/reference_validation/sentinel-3b/slr"
+        },
+        "tle": {
+          "enabled": true,
+          "provider": "spacetrack",
+          "norad": "43437",
+          "output_dir": "data/raw/reference_validation/sentinel-3b/tle"
+        }
+      }
+    },
+    {
+      "sat_id": "swarm-a",
+      "track": "validated",
+      "date_range": {
+        "start": "2023-01-01",
+        "end": "2026-04-15"
+      },
+      "sources": {
+        "slr": {
+          "enabled": true,
+          "provider": "ilrs",
+          "satellite": "swarm-a",
+          "data_type": "npt",
+          "output_dir": "data/raw/expansion_candidates/swarm-a/slr"
+        },
+        "tle": {
+          "enabled": true,
+          "provider": "spacetrack",
+          "norad": "39452",
+          "output_dir": "data/raw/expansion_candidates/swarm-a/tle"
+        }
+      }
+    },
+    {
+      "sat_id": "swarm-b",
+      "track": "validated",
+      "date_range": {
+        "start": "2023-01-01",
+        "end": "2026-04-15"
+      },
+      "sources": {
+        "slr": {
+          "enabled": true,
+          "provider": "ilrs",
+          "satellite": "swarm-b",
+          "data_type": "npt",
+          "output_dir": "data/raw/expansion_candidates/swarm-b/slr"
+        },
+        "tle": {
+          "enabled": true,
+          "provider": "spacetrack",
+          "norad": "39451",
+          "output_dir": "data/raw/expansion_candidates/swarm-b/tle"
+        }
+      }
+    },
+    {
+      "sat_id": "swarm-c",
+      "track": "validated",
+      "date_range": {
+        "start": "2023-01-01",
+        "end": "2026-04-15"
+      },
+      "sources": {
+        "slr": {
+          "enabled": true,
+          "provider": "ilrs",
+          "satellite": "swarm-c",
+          "data_type": "npt",
+          "output_dir": "data/raw/expansion_candidates/swarm-c/slr"
+        },
+        "tle": {
+          "enabled": true,
+          "provider": "spacetrack",
+          "norad": "39453",
+          "output_dir": "data/raw/expansion_candidates/swarm-c/tle"
+        }
+      }
+    },
+    {
+      "sat_id": "grace-fo-1",
+      "track": "validated",
+      "date_range": {
+        "start": "2023-01-01",
+        "end": "2026-04-15"
+      },
+      "sources": {
+        "slr": {
+          "enabled": true,
+          "provider": "ilrs",
+          "satellite": "grace-fo-1",
+          "data_type": "npt",
+          "output_dir": "data/raw/expansion_candidates/grace-fo-1/slr"
+        },
+        "tle": {
+          "enabled": true,
+          "provider": "spacetrack",
+          "norad": "43476",
+          "output_dir": "data/raw/expansion_candidates/grace-fo-1/tle"
+        }
+      }
+    },
+    {
+      "sat_id": "grace-fo-2",
+      "track": "validated",
+      "date_range": {
+        "start": "2023-01-01",
+        "end": "2026-04-15"
+      },
+      "sources": {
+        "slr": {
+          "enabled": true,
+          "provider": "ilrs",
+          "satellite": "grace-fo-2",
+          "data_type": "npt",
+          "output_dir": "data/raw/expansion_candidates/grace-fo-2/slr"
+        },
+        "tle": {
+          "enabled": true,
+          "provider": "spacetrack",
+          "norad": "43477",
+          "output_dir": "data/raw/expansion_candidates/grace-fo-2/tle"
+        }
+      }
+    }
+  ]
+}

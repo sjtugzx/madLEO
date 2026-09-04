@@ -1,0 +1,386 @@
+{
+  "purpose": "Planning and source contract for the MAD-LEO mission-reported maneuver annotations. This is our own collection chain from IDS/DORIS mission history files, not an import of an existing TLE-only maneuver benchmark.",
+  "annotation_layer": "reference_maneuver_annotation_subset",
+  "release_window": {
+    "primary_start": "2023-01-01T00:00:00Z",
+    "primary_end": "2026-04-15T00:00:00Z",
+    "historical_records_allowed_for_protocol_checks": true
+  },
+  "policy": {
+    "primary_label_source": "ids_doris_mission_reported_maneuver_history",
+    "existing_tle_benchmark_role": "external_protocol_comparison_only",
+    "event_label_semantics": "mission-reported maneuver timestamps are converted to event windows with explicit uncertainty before training or evaluation",
+    "evidence_alignment_semantics": "POD, GNSS/DORIS orbit products, SLR, and TLE are used to measure source response, consistency, coverage, and conflicts around mission-reported events",
+    "starlink_label_boundary": "Starlink has no known public per-satellite mission-reported maneuver timestamp source and remains operational-transfer diagnostics only"
+  },
+  "source_roots": {
+    "raw_annotations": "data/raw/reference_validation",
+    "normalized_annotations": "data/interim/normalized_sources/reference_validation",
+    "release_annotations": "data/release/leo-orbital-dynamics/reference_validation_subset"
+  },
+  "targets": [
+    {
+      "sat_id": "sentinel-3a",
+      "display_name": "Sentinel-3A",
+      "batch": "A",
+      "norad": "41335",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SENTINEL-3A",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/s3aman.txt",
+      "tracking_systems": [
+        "SLR",
+        "GPS"
+      ],
+      "planned_role": "train/reference",
+      "raw_annotation_path": "data/raw/reference_validation/sentinel-3a/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/sentinel-3a/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/sentinel-3a/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/sentinel-3a/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/sentinel-3a/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "sentinel-3b",
+      "display_name": "Sentinel-3B",
+      "batch": "A",
+      "norad": "43437",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SENTINEL-3B",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/s3bman.txt",
+      "tracking_systems": [
+        "SLR",
+        "GPS"
+      ],
+      "planned_role": "train/reference",
+      "raw_annotation_path": "data/raw/reference_validation/sentinel-3b/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/sentinel-3b/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/sentinel-3b/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/sentinel-3b/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/sentinel-3b/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "jason-3",
+      "display_name": "Jason-3",
+      "batch": "A",
+      "norad": "41240",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=JASON-3",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/ja3man.txt",
+      "tracking_systems": [
+        "SLR",
+        "GPS"
+      ],
+      "planned_role": "train/reference",
+      "raw_annotation_path": "data/raw/reference_validation/jason-3/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/jason-3/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/jason-3/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/jason-3/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/jason-3/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "sentinel-6a",
+      "display_name": "Sentinel-6A Michael Freilich",
+      "batch": "A",
+      "norad": "46984",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SENTINEL-6A",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/s6aman.txt",
+      "tracking_systems": [
+        "SLR",
+        "GNSS"
+      ],
+      "planned_role": "held-out precise test",
+      "raw_annotation_path": "data/raw/reference_validation/sentinel-6a/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/sentinel-6a/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/sentinel-6a/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/sentinel-6a/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/sentinel-6a/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "cryosat-2",
+      "display_name": "CryoSat-2",
+      "batch": "A",
+      "norad": "36508",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=CRYOSAT-2",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/cs2man.txt",
+      "tracking_systems": [
+        "SLR"
+      ],
+      "planned_role": "validation/event-density",
+      "raw_annotation_path": "data/raw/reference_validation/cryosat-2/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/cryosat-2/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/cryosat-2/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/cryosat-2/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/cryosat-2/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "saral",
+      "display_name": "SARAL/AltiKa",
+      "batch": "A",
+      "norad": "39086",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SARAL",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/srlman.txt",
+      "tracking_systems": [
+        "SLR"
+      ],
+      "planned_role": "train/event-density",
+      "raw_annotation_path": "data/raw/reference_validation/saral/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/saral/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/saral/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/saral/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/saral/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "jason-1",
+      "display_name": "Jason-1",
+      "batch": "B",
+      "norad": "26997",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=JASON-1",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/ja1man.txt",
+      "tracking_systems": [
+        "SLR",
+        "GPS"
+      ],
+      "planned_role": "historical external test",
+      "raw_annotation_path": "data/raw/reference_validation/jason-1/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/jason-1/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/jason-1/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/jason-1/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/jason-1/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "jason-2",
+      "display_name": "Jason-2",
+      "batch": "B",
+      "norad": "33105",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=JASON-2",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/ja2man.txt",
+      "tracking_systems": [
+        "SLR",
+        "GPS"
+      ],
+      "planned_role": "historical external test",
+      "raw_annotation_path": "data/raw/reference_validation/jason-2/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/jason-2/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/jason-2/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/jason-2/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/jason-2/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "topex-poseidon",
+      "display_name": "TOPEX/Poseidon",
+      "batch": "B",
+      "norad": "22076",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=TOPEX",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/topman.txt",
+      "tracking_systems": [
+        "SLR",
+        "GPS"
+      ],
+      "planned_role": "historical external test",
+      "raw_annotation_path": "data/raw/reference_validation/topex-poseidon/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/topex-poseidon/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/topex-poseidon/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/topex-poseidon/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/topex-poseidon/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "hy-2a",
+      "display_name": "HY-2A",
+      "batch": "B",
+      "norad": "37781",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=HY-2A",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/h2aman.txt",
+      "tracking_systems": [
+        "SLR",
+        "GPS"
+      ],
+      "planned_role": "historical external test",
+      "raw_annotation_path": "data/raw/reference_validation/hy-2a/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/hy-2a/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/hy-2a/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/hy-2a/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/hy-2a/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "swot",
+      "display_name": "SWOT",
+      "batch": "B",
+      "norad": "54754",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SWOT",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/swoman.txt",
+      "tracking_systems": [
+        "SLR",
+        "GNSS"
+      ],
+      "planned_role": "modern held-out candidate",
+      "raw_annotation_path": "data/raw/reference_validation/swot/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/swot/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/swot/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/swot/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/swot/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "envisat",
+      "display_name": "ENVISAT",
+      "batch": "C",
+      "norad": "",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=ENVISAT",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/en1man.txt",
+      "tracking_systems": [
+        "SLR"
+      ],
+      "planned_role": "feasibility-only",
+      "raw_annotation_path": "data/raw/reference_validation/envisat/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/envisat/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/envisat/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/envisat/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/envisat/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "hy-2c",
+      "display_name": "HY-2C",
+      "batch": "C",
+      "norad": "",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=HY-2C",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/h2cman.txt",
+      "tracking_systems": [
+        "SLR"
+      ],
+      "planned_role": "feasibility-only",
+      "raw_annotation_path": "data/raw/reference_validation/hy-2c/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/hy-2c/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/hy-2c/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/hy-2c/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/hy-2c/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "hy-2d",
+      "display_name": "HY-2D",
+      "batch": "C",
+      "norad": "",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=HY-2D",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/h2dman.txt",
+      "tracking_systems": [
+        "SLR"
+      ],
+      "planned_role": "feasibility-only",
+      "raw_annotation_path": "data/raw/reference_validation/hy-2d/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/hy-2d/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/hy-2d/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/hy-2d/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/hy-2d/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "sentinel-6b",
+      "display_name": "Sentinel-6B",
+      "batch": "C",
+      "norad": "",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SENTINEL-6B",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/s6bman.txt",
+      "tracking_systems": [
+        "SLR",
+        "GNSS"
+      ],
+      "planned_role": "feasibility-only",
+      "raw_annotation_path": "data/raw/reference_validation/sentinel-6b/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/sentinel-6b/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/sentinel-6b/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/sentinel-6b/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/sentinel-6b/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "spot-2",
+      "display_name": "SPOT-2",
+      "batch": "C",
+      "norad": "",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SPOT-2",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/sp2man.txt",
+      "tracking_systems": [],
+      "planned_role": "feasibility-only",
+      "raw_annotation_path": "data/raw/reference_validation/spot-2/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/spot-2/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/spot-2/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/spot-2/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/spot-2/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "spot-3",
+      "display_name": "SPOT-3",
+      "batch": "C",
+      "norad": "",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SPOT-3",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/sp3man.txt",
+      "tracking_systems": [],
+      "planned_role": "feasibility-only",
+      "raw_annotation_path": "data/raw/reference_validation/spot-3/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/spot-3/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/spot-3/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/spot-3/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/spot-3/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "spot-4",
+      "display_name": "SPOT-4",
+      "batch": "C",
+      "norad": "",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SPOT-4",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/sp4man.txt",
+      "tracking_systems": [],
+      "planned_role": "feasibility-only",
+      "raw_annotation_path": "data/raw/reference_validation/spot-4/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/spot-4/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/spot-4/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/spot-4/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/spot-4/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    },
+    {
+      "sat_id": "spot-5",
+      "display_name": "SPOT-5",
+      "batch": "C",
+      "norad": "",
+      "ids_mission_page_url": "https://ids-doris.org/missions-system/missions/doris-satellite.html?code=SPOT-5",
+      "maneuver_history_url": "https://ids-doris.org/documents/BC/satellites/sp5man.txt",
+      "tracking_systems": [],
+      "planned_role": "feasibility-only",
+      "raw_annotation_path": "data/raw/reference_validation/spot-5/annotations/ids_doris_maneuver_history.txt",
+      "normalized_annotation_path": "data/interim/normalized_sources/reference_validation/spot-5/maneuver_annotations.csv",
+      "tle_raw_path": "data/raw/reference_validation/spot-5/tle/",
+      "precise_orbit_raw_path": "data/raw/reference_validation/spot-5/precise_orbit/",
+      "slr_raw_path": "data/raw/reference_validation/spot-5/slr/",
+      "license_or_terms_status": "needs_review",
+      "redistribution_status": "not_cleared"
+    }
+  ]
+}

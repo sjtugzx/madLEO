@@ -1,0 +1,37 @@
+# Local data workspace produced by the pipeline (raw downloads, interim tables)
+data/
+
+# Generated experiment outputs and figures
+results/
+output/
+
+# Shipped dataset package (distributed via repository deposit, not via git)
+dataset/
+
+# Credentials
+.env
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Tool session state
+.mimosa/
+.superpowers/
+
+# Local agent guidance (not part of the public release)
+AGENTS.md
+
+# Quarantine area for retired/intermediate content, incl. paper sources (never tracked)
+arxiv/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+
+# OS
+.DS_Store

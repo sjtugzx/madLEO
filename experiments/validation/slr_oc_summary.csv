@@ -1,0 +1,12 @@
+sat_id,n_windows_computable,median_oc_shift_m,median_oc_rms_m
+cryosat-2,76,-2.244,37.445
+hy-2a,9,17.93,42.759
+jason-1,1,-20.019,37.539
+jason-2,42,1.793,50.115
+jason-3,17,13.406,47.527
+saral,23,1.803,38.175
+sentinel-3a,53,-0.205,40.912
+sentinel-3b,68,-0.337,39.458
+sentinel-6a,0,,
+swot,3,7.842,38.477
+topex-poseidon,4,3.013,46.218

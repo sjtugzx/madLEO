@@ -1,0 +1,13 @@
+sat_id,benchmark_events,madleo_events,benchmark_matched,madleo_matched,median_abs_offset_minutes,madleo_events_in_benchmark_span,madleo_matched_in_benchmark_span,median_abs_dsma_matched_m,median_abs_dsma_unmatched_m,reverse_match_rate_all_events,reverse_match_rate_shared_targets,reverse_match_rate_in_benchmark_span,note
+cryosat-2,168,241,158,158,1438.2,168,158,20.6,39.0,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+hy-2a,58,58,57,57,1439.4,58,57,10.0,3.9,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+jason-1,119,119,107,107,1439.2,119,107,1.4,7.2,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+jason-2,111,111,97,97,1439.0,111,97,7.4,4.2,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+jason-3,43,85,40,40,1439.3,43,40,10.8,17.7,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+saral,62,67,59,59,1439.4,62,59,40.6,98.5,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+sentinel-3a,64,147,63,63,1439.4,64,63,17.0,28.3,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+sentinel-3b,56,145,50,50,1435.0,56,50,21.3,28.8,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+sentinel-6a,18,32,15,15,1436.1,18,15,283.7,10.5,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+topex-poseidon,43,43,41,41,1440.0,43,41,3.9,3.3,,,,unique greedy bijection on ascending |dt| (no many-to-one); benchmark timestamps carry a systematic +1 day offset (their day-of-year parsing); matched within 1-day tolerance
+swot,0,86,0,0,,0,0,,,,,,not covered by benchmark; validated by internal experiments only
+ALL,742,1134,687,687,,742,687,13.2,30.2,0.6058,0.6555,0.9259,

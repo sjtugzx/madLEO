@@ -1,0 +1,2 @@
+sat_id,sample_count,below_min_sample,tle_only_median_km,degraded_only_median_km,fused_median_km,tle_over_fused_median_ratio
+jason-2,10,False,0.5018583251049644,1.2051395894499544,0.5555446183119043,0.9033627697266283

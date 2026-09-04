@@ -1,0 +1,6 @@
+shell,satellite_count,epoch_count,inclination_median_deg,sma_altitude_median_km,sma_altitude_iqr_km,eccentricity_median,raan_plane_count
+43.0,2125,16043,43.0026,566.19,115.0,0.000134,26
+53.0,1311,11149,53.0538,554.27,24.48,0.000145,53
+53.2,2619,19857,53.214,546.84,72.81,0.000146,22
+70,397,2731,69.9997,579.18,0.02,0.000286,23
+97.6,232,1695,97.655,570.14,0.02,0.0002,5

@@ -1,0 +1,2 @@
+sample_count,sigma_x_m,sigma_y_m,lambda_sigma_y2_over_sigma_x2,x_variance_m2,ols_slope,ols_intercept_m,ols_attenuation_corrected_slope,deming_slope,deming_intercept_m,note
+556,24.0,1.1,0.002100694444444445,5283728.797,0.589854,4.4444,0.589918,0.608451,1.105,"x = TLE bracketing SMA shift, y = orbit period-averaged SMA shift; sigmas are the pre-registered stable-window noise floors (REVIEW_FINDINGS 7.1.2); OLS y-on-x attenuates by Var(x_true)/(Var(x_true)+sigma_x^2)"

@@ -1,0 +1,12 @@
+sat_id,batch,mission_start_utc,mission_end_utc,mission_years,event_window_count,requested_stable_window_count,stable_window_count,aligned_window_count,tle_covered_count,slr_covered_count,orbit_covered_count,confidence_A_count,confidence_B_count,confidence_C_count,constrained,notes
+sentinel-3a,A,2016-02-16T20:01:53.232Z,2026-06-30T23:05:19.130Z,11,147,147,147,58,147,90,76,58,18,71,False,
+sentinel-3b,A,2018-04-25T21:39:06.149Z,2026-06-30T22:26:38.370Z,9,145,145,145,62,145,103,81,62,19,64,False,
+jason-3,A,2016-01-17T20:22:02.081Z,2026-07-22T21:16:11.458Z,11,85,85,85,37,85,52,40,37,3,45,False,
+sentinel-6a,A,2020-11-21T19:06:03.724Z,2026-06-18T15:31:40.991Z,7,32,32,32,0,32,27,0,0,0,32,False,
+cryosat-2,A,2010-04-08T15:02:25.846Z,2026-07-05T09:56:32.406Z,17,241,241,241,19,241,75,43,19,24,198,False,
+saral,A,2013-02-25T13:31:35.780Z,2026-03-09T22:48:24.420Z,14,67,70,70,18,70,53,20,18,2,50,False,
+jason-1,B,2001-12-07T16:14:19.838Z,2013-07-11T03:25:40.927Z,13,119,119,119,3,119,27,11,3,8,108,False,
+jason-2,B,2008-06-20T08:52:41.231Z,2019-11-01T21:55:58.464Z,12,111,111,111,4,111,36,10,4,6,101,False,
+topex-poseidon,B,1992-08-11T02:59:12.945Z,2004-12-16T10:40:43.073Z,13,43,44,44,0,44,2,2,0,2,42,False,
+hy-2a,B,2011-08-29T01:19:24.679Z,2020-07-08T22:39:30.214Z,10,58,58,58,3,58,30,4,3,1,54,False,
+swot,B,2022-12-16T15:10:31.239Z,2026-07-01T03:16:07.329Z,5,86,87,87,0,87,79,0,0,0,87,False,

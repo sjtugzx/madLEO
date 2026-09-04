@@ -1,0 +1,544 @@
+{
+  "generated_at": "2026-09-04T03:34:55Z",
+  "method": "AST write-site extraction (to_csv/write_text/shutil.copy destinations resolved through literals, assignments, and module constants) over the modules registered in the run_experiments and process dispatchers; files claimed by no registered command are listed as orphan",
+  "dispatchers": {
+    "scripts/experiments/run_experiments.py": {
+      "attenuation-demo": "generate_attenuation_demo",
+      "core-label-tables": "generate_core_label_tables",
+      "distribution-validation": "generate_distribution_validation",
+      "event-response": "generate_maneuver_event_response",
+      "external-crossvalidation": "generate_external_crossvalidation",
+      "kozai-comparison": "generate_kozai_comparison",
+      "new-analysis-figures": "generate_new_analysis_figures",
+      "paper-tv-figures": "make_tv_figures",
+      "provenance-map": "generate_provenance_map",
+      "results-figures": "generate_results_figures",
+      "slr-crossformat-check": "slr_crossformat_check",
+      "slr-oc-audit": "generate_slr_oc_audit",
+      "stable-windows": "generate_stable_windows",
+      "starlink-distributions": "generate_starlink_distributions",
+      "starlink-step-candidates": "generate_starlink_step_candidates",
+      "state-estimates": "generate_maneuver_state_estimates",
+      "state-fusion": "generate_state_fusion",
+      "tv-hardening": "generate_tv_hardening",
+      "window-sensitivity": "generate_window_sensitivity"
+    },
+    "scripts/data_pipeline/process.py": {
+      "align-evidence": "alignment.align_maneuver_evidence",
+      "annotation-alignment": "alignment.generate_reference_annotation_alignment",
+      "audit-sources": "alignment.audit_batch_a_evidence_sources",
+      "audit-windows": "alignment.audit_reference_window_alignment",
+      "canonicalize": "alignment.canonicalize_release_schema",
+      "export-labels": "alignment.public_labels",
+      "export-release": "alignment.release_export",
+      "export-sources": "alignment.export_normalized_sources",
+      "normalize-annotations": "alignment.normalize_maneuver_annotations",
+      "normalize-starlink": "alignment.normalize_starlink_operational_subset",
+      "selfcheck": "alignment.release_selfcheck"
+    }
+  },
+  "scopes": [
+    "experiments/validation/",
+    "dataset/mission_reported/annotations/"
+  ],
+  "file_count": 64,
+  "mapped_count": 64,
+  "orphan_count": 0,
+  "orphans": [],
+  "files": [
+    {
+      "file": "experiments/validation/PROVENANCE.json",
+      "generators": [
+        "provenance-map"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/annotation_response_floor.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/annotation_uncertainty_strata.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/attenuation_demo.csv",
+      "generators": [
+        "attenuation-demo"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/evidence_sources.csv",
+      "generators": [
+        "selfcheck"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/external_benchmark_crossvalidation.csv",
+      "generators": [
+        "export-release",
+        "external-crossvalidation"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/external_benchmark_crossvalidation_per_event.csv",
+      "generators": [
+        "export-release",
+        "external-crossvalidation"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/external_benchmark_match_offsets.csv",
+      "generators": [
+        "external-crossvalidation"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/external_benchmark_tolerance_sweep.csv",
+      "generators": [
+        "external-crossvalidation"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/fusion_value_per_window.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/fusion_value_summary.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/gap_taxonomy_completeness.json",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/harmonization_confidence_discrimination.csv",
+      "generators": [
+        "export-release",
+        "state-fusion"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/harmonization_coverage.csv",
+      "generators": [
+        "export-release",
+        "state-estimates"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/harmonization_sigma_split_validation.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/harmonization_validation_summary.csv",
+      "generators": [
+        "export-release",
+        "state-fusion"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/headline_statistics.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/kozai_comparison.csv",
+      "generators": [
+        "kozai-comparison"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/kozai_comparison_per_event.csv",
+      "generators": [
+        "kozai-comparison"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/maneuver_annotation_summary.csv",
+      "generators": [
+        "core-label-tables",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/maneuver_confidence_tier_summary.csv",
+      "generators": [
+        "core-label-tables",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/maneuver_event_fused_states.csv",
+      "generators": [
+        "export-release",
+        "state-fusion"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/maneuver_event_response_summary.csv",
+      "generators": [
+        "event-response",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/maneuver_event_response_validation.csv",
+      "generators": [
+        "event-response",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/maneuver_event_state_estimates.csv",
+      "generators": [
+        "export-release",
+        "state-estimates"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/maneuver_evidence_alignment_summary.csv",
+      "generators": [
+        "core-label-tables",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/matched_specificity.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/orbit_interpolation_selfcheck.csv",
+      "generators": [
+        "export-release",
+        "state-estimates"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/orbit_state_distribution_summary.csv",
+      "generators": [
+        "distribution-validation",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/reference_all_window_alignment_status.csv",
+      "generators": [
+        "annotation-alignment",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/reference_annotation_alignment_summary.csv",
+      "generators": [
+        "annotation-alignment",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/reference_recent_window_alignment_status.csv",
+      "generators": [
+        "audit-windows"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/rejection_ledger.csv",
+      "generators": [
+        "staging-qc (alignment/stage_evidence_slr_tle SLR re-parse, frozen artifact)"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/s6a_gnss_coverage_manifest.csv",
+      "generators": [
+        "selfcheck"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/sgp4_propagation_residuals.csv",
+      "generators": [
+        "export-release",
+        "state-estimates"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/sgp4_propagation_residuals_all.csv",
+      "generators": [
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/sgp4_propagation_residuals_clean.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/sigma_calibration_curve.csv",
+      "generators": [
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/sign_agreement_by_magnitude.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/slope_estimation_comparison.csv",
+      "generators": [
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/slr_crossformat_validation.csv",
+      "generators": [
+        "slr-crossformat-check"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/slr_distribution_summary.csv",
+      "generators": [
+        "distribution-validation",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/slr_oc_residuals.csv",
+      "generators": [
+        "slr-oc-audit"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/slr_oc_summary.csv",
+      "generators": [
+        "slr-oc-audit"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/slr_parse_qc.csv",
+      "generators": [
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/source_bias_calibration.csv",
+      "generators": [
+        "export-release",
+        "state-fusion"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/stable_window_response_validation.csv",
+      "generators": [
+        "export-release",
+        "stable-windows"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/stable_windows.csv",
+      "generators": [
+        "export-labels",
+        "export-release",
+        "stable-windows"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/stable_windows_match_report.csv",
+      "generators": [
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/stable_windows_matched.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/stable_windows_summary.csv",
+      "generators": [
+        "export-release",
+        "stable-windows"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/starlink_ephemeris_distribution.csv",
+      "generators": [
+        "export-release",
+        "starlink-distributions"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/starlink_tle_distribution_summary.csv",
+      "generators": [
+        "export-release",
+        "starlink-distributions"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/tier_distribution_equivalence.csv",
+      "generators": [
+        "distribution-validation",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/tier_equivalence_tost.csv",
+      "generators": [
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/tier_response_distribution.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/tier_sigma_coverage.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/tier_sign_agreement.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/tle_element_distribution_summary.csv",
+      "generators": [
+        "distribution-validation",
+        "export-release"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "experiments/validation/window_sensitivity.csv",
+      "generators": [
+        "window-sensitivity"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "dataset/mission_reported/annotations/event_windows.csv",
+      "generators": [
+        "export-release",
+        "normalize-annotations"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "dataset/mission_reported/annotations/maneuver_annotations.csv",
+      "generators": [
+        "export-release",
+        "normalize-annotations"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "dataset/mission_reported/annotations/stable_windows.csv",
+      "generators": [
+        "export-labels",
+        "export-release",
+        "stable-windows"
+      ],
+      "status": "mapped"
+    },
+    {
+      "file": "dataset/mission_reported/annotations/stable_windows_matched.csv",
+      "generators": [
+        "export-release",
+        "tv-hardening"
+      ],
+      "status": "mapped"
+    }
+  ]
+}

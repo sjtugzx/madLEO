@@ -1,0 +1,13 @@
+sat_id,batch,mission_reported_event_count,tle_covered_count,slr_covered_count,orbit_covered_count,all_source_aligned_count,missing_tle_count,missing_slr_count,missing_orbit_count,local_slr_gap_count,source_conflict_count,evidence_scope,quality_flags
+cryosat-2,A,241,241,142,196,109,0,99,45,87,0,local_event_window_overlap,coverage_gaps_present
+hy-2a,B,58,58,41,42,29,0,17,16,13,0,local_event_window_overlap,coverage_gaps_present
+jason-1,B,119,119,47,78,43,0,72,41,35,0,local_event_window_overlap,coverage_gaps_present
+jason-2,B,111,111,80,75,52,0,31,36,23,0,local_event_window_overlap,coverage_gaps_present
+jason-3,A,85,85,66,67,53,0,19,18,14,0,local_event_window_overlap,coverage_gaps_present
+saral,A,67,67,60,51,49,0,7,16,2,0,local_event_window_overlap,coverage_gaps_present
+sentinel-3a,A,147,147,137,146,137,0,10,1,9,0,local_event_window_overlap,coverage_gaps_present
+sentinel-3b,A,145,145,140,144,140,0,5,1,4,0,local_event_window_overlap,coverage_gaps_present
+sentinel-6a,A,32,32,28,29,28,0,4,3,1,0,local_event_window_overlap,coverage_gaps_present
+swot,B,86,86,78,84,78,0,8,2,6,0,local_event_window_overlap,coverage_gaps_present
+topex-poseidon,B,43,43,43,36,36,0,0,7,0,0,local_event_window_overlap,coverage_gaps_present
+ALL,"A,B",1134,1134,862,948,754,0,272,186,194,0,local_event_window_overlap,coverage_gaps_present

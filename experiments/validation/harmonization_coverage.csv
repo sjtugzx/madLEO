@@ -1,0 +1,12 @@
+sat_id,window_count,tle_computed_count,orbit_computed_count,slr_computed_count
+cryosat-2,241,241,195,135
+hy-2a,58,57,40,39
+jason-1,119,119,72,45
+jason-2,111,111,68,77
+jason-3,85,85,47,59
+saral,67,67,48,56
+sentinel-3a,147,147,81,133
+sentinel-3b,145,145,90,135
+sentinel-6a,32,32,0,25
+swot,86,86,67,76
+topex-poseidon,43,42,19,43

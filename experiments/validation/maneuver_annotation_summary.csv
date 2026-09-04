@@ -1,0 +1,13 @@
+sat_id,batch,target_count,mission_reported_event_count,public_event_count,aligned_window_count,first_window_start_utc,last_window_end_utc,annotation_label_source,quality_flags
+cryosat-2,A,1,241,241,109,2010-04-15T11:47:34Z,2026-07-02T19:54:12.003Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+hy-2a,B,1,58,58,29,2011-09-28T10:20:34Z,2020-06-10T01:40:37Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+jason-1,B,1,119,119,43,2001-12-11T07:08:39.789Z,2013-06-14T22:33:08.676Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+jason-2,B,1,111,111,52,2008-06-22T19:31:48.767Z,2019-10-05T06:11:00Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+jason-3,A,1,85,85,53,2016-01-19T16:18:38.266Z,2026-07-06T08:26:02.622Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+saral,A,1,67,67,49,2013-02-27T07:17:06Z,2026-02-09T23:22:17.015Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+sentinel-3a,A,1,147,147,137,2016-02-22T03:30:26.812Z,2026-06-19T08:10:37Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+sentinel-3b,A,1,145,145,140,2018-04-30T03:20:36Z,2026-06-12T07:11:37Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+sentinel-6a,A,1,32,32,28,2020-11-22T20:38:42Z,2026-05-21T23:43:07Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+swot,B,1,86,86,78,2023-01-10T20:39:51.135Z,2026-06-05T19:38:30.014Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+topex-poseidon,B,1,43,43,36,1992-08-17T12:22:00Z,2004-11-18T20:52:00Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
+ALL,"A,B",11,1134,1134,754,1992-08-17T12:22:00Z,2026-07-06T08:26:02.622Z,ids_doris_mission_reported_maneuver,coverage_gaps_present
