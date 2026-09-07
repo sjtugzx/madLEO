@@ -799,7 +799,7 @@ def fig_maneuver_anatomy(tables: Path, output: Path, dataset_root: Path = DATASE
         if len(band):
             rel = (band["mean_motion_rad_per_min"] - band["mean_motion_rad_per_min"].iloc[0]) * 1e6
             ax.plot(band["days"], rel, ".", color=BLUE, markersize=2.5)
-        ax.axvline(0, color=VERMILION, linewidth=0.9)
+        ax.axvline(0, color="0.2", linewidth=0.9)
         ax.axvspan(-0.25, 1.0, color=ORANGE, alpha=0.15, linewidth=0)
         ax.set_ylabel(r"TLE mean-motion change" + "\n" + r"($10^{-6}$ rad/min)")
         despine(ax)
@@ -836,7 +836,7 @@ def fig_maneuver_anatomy(tables: Path, output: Path, dataset_root: Path = DATASE
                 step = max(1, len(days) // 400)
                 ax.plot(days.iloc[::step], (smooth - a).iloc[::step], "-", color=GREEN, linewidth=0.8)
                 plotted = True
-        ax.axvline(0, color=VERMILION, linewidth=0.9)
+        ax.axvline(0, color="0.2", linewidth=0.9)
         ax.axvspan(-0.25, 1.0, color=ORANGE, alpha=0.15, linewidth=0)
         ax.set_ylabel("POD SMA − band median (m)")
         if plotted and row == 0:
@@ -855,7 +855,7 @@ def fig_maneuver_anatomy(tables: Path, output: Path, dataset_root: Path = DATASE
             if len(sb):
                 days = (sb["epoch"] - t0).dt.total_seconds() / 86400.0
                 ax.plot(days, sb["sigma_m"].astype(float), ".", color=VERMILION, markersize=2.5)
-        ax.axvline(0, color=VERMILION, linewidth=0.9)
+        ax.axvline(0, color="0.2", linewidth=0.9)
         ax.axvspan(-0.25, 1.0, color=ORANGE, alpha=0.15, linewidth=0)
         ax.set_ylabel("SLR sigma (m)")
         despine(ax)

@@ -126,7 +126,7 @@ def sat_colors(order: list[str]) -> dict[str, tuple]:
 
 def new_figure_2x3():
     fig = plt.figure(figsize=(7.2, PANEL_H * 2 + 0.6))
-    gs = gridspec.GridSpec(2, 3, figure=fig, wspace=0.55, hspace=0.60)
+    gs = gridspec.GridSpec(2, 3, figure=fig, wspace=0.62, hspace=0.60)
     return fig, gs
 
 
@@ -201,8 +201,8 @@ def fig_dataset():
     ax.set_yticks(y, [SAT_NAMES[s] for s in order])
     ax.set_xlabel("Event windows")
     ax.set_xlim(0, 275)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), frameon=False,
-              ncol=2, fontsize=5.5, columnspacing=0.6, handletextpad=0.3)
+    ax.legend(loc="lower right", bbox_to_anchor=(0.98, 0.02), frameon=False,
+              ncol=1, fontsize=5.5, handletextpad=0.3)
     panel(ax, "a", "Event windows per target")
 
     # (b) evidence coverage per satellite
@@ -218,8 +218,8 @@ def fig_dataset():
     ax.set_yticks(y, [SAT_NAMES[s] for s in order])
     ax.set_xlabel("Windows covered")
     ax.set_xlim(0, 275)
-    ax.legend(loc="lower right", frameon=False, ncol=3, title=None,
-              columnspacing=0.5, handletextpad=0.3)
+    ax.legend(loc="lower right", bbox_to_anchor=(0.97, 0.03), frameon=False,
+              ncol=1, title=None, handletextpad=0.3, labelspacing=0.3)
     panel(ax, "b", "Evidence coverage per target")
 
     # (c) tier composition
@@ -257,8 +257,8 @@ def fig_dataset():
     ax.set_yticks(y, [SAT_NAMES[s] for s in order])
     ax.set_xlabel("Stable windows")
     ax.set_xlim(0, 275)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), frameon=False,
-              ncol=2, fontsize=5.5, columnspacing=0.6, handletextpad=0.3)
+    ax.legend(loc="lower right", bbox_to_anchor=(0.98, 0.02), frameon=False,
+              ncol=1, fontsize=5.5, handletextpad=0.3)
     panel(ax, "d", "Stable control windows per target")
 
     # (e) SLR NP precision per target
@@ -285,14 +285,20 @@ def fig_dataset():
     ]
     xx = np.arange(len(metrics))
     w = 0.32
+    # Point estimates, not bars: on the zoomed (0.85-1.04) axis bar lengths
+    # would visually exaggerate the tier differences.
     for k, (tier_name, c) in enumerate([("A", TIER_COLORS["A"]), ("B", TIER_COLORS["B"])]):
         vals = [m[1].get(tier_name, np.nan) for m in metrics]
-        ax.bar(xx + (k - 0.5) * w, vals, width=w, color=c, label=f"Tier {tier_name}")
+        ax.plot(xx + (k - 0.5) * w, vals, "o", color=c, markersize=5,
+                markeredgecolor="white", markeredgewidth=0.5,
+                label=f"Tier {tier_name}")
+        ha, dx = ("right", -0.045) if k == 0 else ("left", 0.045)
         for xi, v in zip(xx + (k - 0.5) * w, vals):
-            ax.text(xi, v + 0.004, f"{v*100:.1f}%", ha="center", fontsize=5.5)
+            ax.text(xi + dx, v, f"{v*100:.1f}%", ha=ha, va="center", fontsize=5.5)
     labels = [f"{m[0]}\n(n={m[2].get('A', 0)}/{m[2].get('B', 0)})" for m in metrics]
     ax.axhline(1.0, color="0.5", linewidth=0.5, linestyle=":")
     ax.set_xticks(xx, labels)
+    ax.set_xlim(-0.55, 1.55)
     ax.set_ylim(0.85, 1.04)
     ax.set_ylabel("Fraction")
     ax.legend(loc="upper right", frameon=False, ncol=2)
@@ -306,6 +312,9 @@ def fig_external():
     """External benchmark cross-validation (tolerance sweep is text-only)."""
     xv = pd.read_csv(VAL / "external_benchmark_crossvalidation.csv")
     xv = xv[xv.sat_id != "ALL"].copy()
+    # The benchmark predates SWOT (zero benchmark events), so its match rates
+    # are undefined rather than zero — exclude it from the panel.
+    xv = xv[xv.benchmark_events > 0]
     xv["forward"] = xv.benchmark_matched / xv.benchmark_events
     xv["reverse"] = xv.madleo_matched / xv.madleo_events
     xv["in_span"] = xv.madleo_matched_in_benchmark_span / xv.madleo_events_in_benchmark_span
@@ -327,8 +336,9 @@ def fig_external():
     ax.set_xlim(0, 1.02)
     ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
     ax.set_xlabel("Match rate")
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.20), ncol=1,
-              frameon=False, fontsize=6, handletextpad=0.4)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=3,
+              frameon=False, fontsize=5.5, handletextpad=0.25, columnspacing=0.4,
+              borderpad=0.1)
     panel(ax, "a", "Benchmark match rates per target")
 
     # (b) signed match-offset histogram (pre-binned table)
@@ -361,21 +371,18 @@ def fig_external():
     pe["grp"] = np.where(~pe.within_benchmark_span, "out-of-span",
                          np.where(pe.matched_within_1d.fillna(False),
                                   "matched\nin-span", "unmatched\nin-span"))
+    names = ["matched", "unmatched", "out-of-span"]
+    keys = ["matched\nin-span", "unmatched\nin-span", "out-of-span"]
     groups, counts = [], []
-    for lab in ["matched\nin-span", "unmatched\nin-span", "out-of-span"]:
-        g = pe[pe.grp == lab].abs_delta_sma_m.dropna().to_numpy()
+    for key in keys:
+        g = pe[pe.grp == key].abs_delta_sma_m.dropna().to_numpy()
         groups.append(g)
         counts.append(len(g))
-    log_violin(ax, groups, ["", "", ""], [GREEN, ORANGE, GREY])
+    log_violin(ax, groups, [f"{lab}\n(n={c})" for lab, c in zip(names, counts)],
+               [GREEN, ORANGE, GREY])
     ax.set_xlim(0.4, 4.05)
     ax.set_ylim(-2.2, 3.6)
-    # Stagger the middle group label one line lower: at 1x3 panel width the
-    # three two-line tick labels would otherwise collide horizontally.
-    staggered = ["matched", "unmatched", "out-of-span"]
-    for i, (lab, c) in enumerate(zip(staggered, counts), start=1):
-        ax.text(i, -0.14 if i != 2 else -0.30, f"{lab}\n(n={c})",
-                transform=ax.get_xaxis_transform(), ha="center", va="top",
-                fontsize=5.5)
+    plt.setp(ax.get_xticklabels(), rotation=28, ha="right", fontsize=6)
     panel(ax, "c", "Response by match status")
 
     save(fig, "tv_external_validation")
@@ -413,16 +420,16 @@ def fig_event_response():
     ax.set_ylabel("Event windows")
     axt = ax.twinx()
     xs = np.sort(v)
-    axt.plot(xs, np.arange(1, len(xs) + 1) / len(xs), color=VERMILION, linewidth=1.0)
+    axt.plot(xs, np.arange(1, len(xs) + 1) / len(xs), color="0.25", linewidth=1.0)
     axt.set_ylim(0, 1.02)
-    axt.set_ylabel("ECDF", color=VERMILION)
-    axt.tick_params(axis="y", colors=VERMILION, labelsize=6, length=2.0, width=0.6)
+    axt.set_ylabel("ECDF", color="0.25")
+    axt.tick_params(axis="y", colors="0.25", labelsize=6, length=2.0, width=0.6)
     axt.spines["top"].set_visible(False)
     med = np.median(v)
     frac_below_500 = float((v < 500.0).mean())
     ax.axvline(med, color="black", linestyle=":", linewidth=0.7)
-    ax.annotate(f"median {med:.1f} m\n{frac_below_500 * 100:.0f}% < 500 m", xy=(0.97, 0.72),
-                xycoords="axes fraction", ha="right", fontsize=6)
+    ax.annotate(f"median {med:.1f} m\n{frac_below_500 * 100:.0f}% < 500 m", xy=(0.04, 0.96),
+                xycoords="axes fraction", ha="left", va="top", fontsize=6)
     panel(ax, "a", "TLE response distribution")
 
     # (b) TLE vs POD scatter
@@ -447,7 +454,7 @@ def fig_event_response():
     ax.plot(xx, np.polyval(ols, xx), color="black", linewidth=0.8, linestyle="--",
             label=f"OLS {ols[0]:.2f}")
     ax.plot(xx, dem * xx + (y.mean() - dem * x.mean()), color=VERMILION, linewidth=0.8,
-            linestyle=":", label=f"Deming {dem:.2f}")
+            linestyle="-", label=f"Deming {dem:.2f}")
     ax.set_xlim(-lim, lim)
     ax.set_ylim(-lim, lim)
     ax.set_aspect("equal")
@@ -472,12 +479,11 @@ def fig_event_response():
     ax = fig.add_subplot(gs[1, 0])
     bars = ax.bar(range(len(sg)), sg["mean"], color=BLUE, width=0.62)
     for i, (_, row) in enumerate(sg.iterrows()):
-        ax.text(i, row["mean"] + 0.012, f"{row['mean']*100:.0f}%",
-                ha="center", fontsize=6.5)
-        ax.text(i, 0.035, f"n={int(row['count'])}", ha="center", fontsize=6,
-                color="white")
+        ax.text(i, row["mean"] + 0.015,
+                f"{row['mean']*100:.0f}%\nn={int(row['count'])}",
+                ha="center", va="bottom", fontsize=6)
     ax.set_xticks(range(len(sg)), sg.response_band)
-    ax.set_ylim(0, 1.12)
+    ax.set_ylim(0, 1.22)
     ax.set_xlabel(r"TLE $|\Delta a|$ band")
     ax.set_ylabel("TLE-orbit sign agreement")
     panel(ax, "d", "Sign agreement by magnitude")
@@ -529,8 +535,10 @@ def fig_event_response():
     ax.set_ylim(ylim_lo, ylim_hi)
     ax.set_xlabel("Post-event O-C RMS (m)")
     ax.set_ylabel("O-C median shift (m)")
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), frameon=False,
-              fontsize=5, ncol=3, handletextpad=0.15, columnspacing=0.4)
+    ax.legend(loc="center right", bbox_to_anchor=(0.98, 0.42), frameon=True,
+              facecolor="white", edgecolor="none", framealpha=0.9,
+              fontsize=5, ncol=1, handletextpad=0.2, labelspacing=0.3,
+              borderpad=0.25)
     panel(ax, "f", "SLR O-C shift vs RMS")
 
     save(fig, "tv_event_response")
@@ -621,7 +629,7 @@ def fig_consistency():
     ax.set_ylabel("Residual vs POD (km)")
     ax.set_xlim(0, 82)
     ax.set_ylim(0.35, 1.5)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.24), frameon=False,
+    ax.legend(loc="upper left", bbox_to_anchor=(0.02, 0.98), frameon=False,
               ncol=1, fontsize=6)
     panel(ax, "a", "SGP4 propagation residuals")
 
@@ -641,10 +649,10 @@ def fig_consistency():
     ax.set_xticks(xx, [r"$1\sigma$", r"$2\sigma$", r"$3\sigma$"])
     ax.set_ylim(0, 1.12)
     ax.set_ylabel("Coverage fraction")
-    ax.text(0.98, 0.04, f"n = {int(sc.sample_count.iloc[0])} windows",
-            transform=ax.transAxes, fontsize=6, ha="right", va="bottom")
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.24), frameon=False,
-              ncol=1, fontsize=6)
+    ax.text(0.03, 0.97, f"n = {int(sc.sample_count.iloc[0])} windows",
+            transform=ax.transAxes, fontsize=6, ha="left", va="top")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), frameon=False,
+              ncol=2, fontsize=6, columnspacing=0.6, handletextpad=0.3)
     panel(ax, "b", "Sigma-model calibration")
 
     # (c) bias calibration R/A/C
@@ -665,7 +673,8 @@ def fig_consistency():
     ax.axvline(0, color="black", linewidth=0.6)
     ax.set_yticks(yy, [SAT_NAMES.get(s, s) for s in g.index])
     ax.set_xlabel("TLE $-$ POD bias, median (m)")
-    ax.legend(loc="lower right", frameon=False, ncol=1)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.18), frameon=False,
+              ncol=3, fontsize=6, columnspacing=0.5, handletextpad=0.3)
     panel(ax, "c", "Per-target TLE-POD bias")
 
     # (d) Starlink plane-family scatter + reference missions
@@ -688,27 +697,28 @@ def fig_consistency():
     for sh, c in zip(shells, shell_cols):
         m = np.abs(inc - sh) <= SHELL_TOLERANCE_DEG
         assigned |= m
-        ax.scatter(inc[m], alt[m], s=1.2, color=c, alpha=0.35, edgecolor="none",
-                   label=f"{sh:g}$^\\circ$ planes", rasterized=True)
+        ax.scatter(inc[m], alt[m], s=1.8, color=c, alpha=0.45, edgecolor="none",
+                   label=f"{sh:g}$^\\circ$", rasterized=True)
     if (~assigned).any():
-        ax.scatter(inc[~assigned], alt[~assigned], s=1.2, color="0.6", alpha=0.35,
+        ax.scatter(inc[~assigned], alt[~assigned], s=1.8, color="0.6", alpha=0.45,
                    edgecolor="none", rasterized=True)
-    ax.annotate("sub-480 km population:\ndeployment / transfer orbits",
-                xy=(43.5, 350), xytext=(38.8, 200), fontsize=6, ha="left",
+    ax.annotate("sub-480 km: deployment / transfer",
+                xy=(47.0, 350), xytext=(56, 215), fontsize=6, ha="left",
                 va="center",
                 arrowprops=dict(arrowstyle="-", linewidth=0.4, color="0.4"))
     tle = pd.read_csv(VAL / "tle_element_distribution_summary.csv")
-    ax.scatter(tle.inclination_median_deg, tle.sma_altitude_median_km, s=26,
-               marker="D", color="black", zorder=6, label="reference missions (11)")
+    ax.scatter(tle.inclination_median_deg, tle.sma_altitude_median_km, s=11,
+               marker="D", color="black", edgecolors="white", linewidths=0.4,
+               zorder=6, label="reference (11)")
     ax.set_xlabel("Inclination (deg)")
     ax.set_ylabel("Altitude (km)")
     ax.set_xlim(38, 106)
     ax.set_ylim(150, 1520)
-    leg = ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=3,
+    leg = ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.22), ncol=3,
                     frameon=False, fontsize=5.5, handletextpad=0.3,
                     borderpad=0.2, labelspacing=0.3, columnspacing=0.6)
     for handle in leg.legend_handles:
-        handle.set_sizes([18.0])
+        handle.set_sizes([10.0])
         handle.set_alpha(1.0)
     panel(ax, "d", "Starlink planes vs reference missions")
 
@@ -741,8 +751,8 @@ def fig_consistency():
                 f"{row.residual_median_km:.1f} km, {row.propagation_age_median_hours:.1f} h",
                 va="center", fontsize=6)
     ax.set_yticks(yy, cons.sat_id)
-    ax.set_xlim(0, 25.0)
-    ax.set_xlabel("Median residual (km) @ median age (h)")
+    ax.set_xlim(0, 20.0)
+    ax.set_xlabel("Median TLE-ephemeris residual (km)")
     panel(ax, "f", "Starlink residual per satellite")
 
     save(fig, "tv_consistency")
