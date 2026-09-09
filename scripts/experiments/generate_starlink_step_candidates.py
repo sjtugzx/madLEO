@@ -24,12 +24,20 @@ import pandas as pd
 
 from pathlib import Path
 
+from benchmarking.experiment_params import EARTH_RADIUS_KM
+from processors.physical_qc import EARTH_MU_M3_PER_S2
+
 REPO = Path(__file__).resolve().parents[2]
 TLE = REPO / "dataset" / "operational" / "starlink" / "tle_elements.parquet"
 OUT = REPO / "experiments" / "starlink"
 OUT_TABLE = OUT / "starlink_tle_step_candidates.csv"
 
-MU_M3_PER_S2 = 3.986004418e14
+# P4 single source: mu (processors.physical_qc) and the altitude convention
+# (benchmarking.experiment_params.EARTH_RADIUS_KM) come from the shared
+# modules -- altitude = a - 6,371.0 km spherical mean radius, the convention
+# of every released altitude column; previously this script hardcoded the
+# WGS-84 equatorial radius here, 7.1 km off the rest of the release.
+MU_M3_PER_S2 = EARTH_MU_M3_PER_S2
 STEP_THRESHOLD_M = 100.0
 
 
@@ -39,7 +47,7 @@ def main() -> int:
     a_km = (MU_M3_PER_S2 / n_rad_per_s ** 2) ** (1.0 / 3.0) / 1000.0
     tle = tle.assign(a_km=a_km)
     tle["delta_sma_m"] = tle.groupby("sat_id")["a_km"].diff() * 1000.0
-    tle["median_altitude_km"] = tle.groupby("sat_id")["a_km"].transform("median") - 6378.137
+    tle["median_altitude_km"] = tle.groupby("sat_id")["a_km"].transform("median") - EARTH_RADIUS_KM
     steps = tle[tle["delta_sma_m"].abs() > STEP_THRESHOLD_M].copy()
     prev_epoch = tle.groupby("sat_id")["epoch"].shift()
     steps["bracket_start_utc"] = prev_epoch[steps.index].dt.strftime("%Y-%m-%dT%H:%M:%SZ")

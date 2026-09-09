@@ -84,6 +84,7 @@ from benchmarking.normalization import _detect_child_slr_format  # noqa: E402
 from processors.physical_qc import (  # noqa: E402
     PhysicalQCViolation,
     assert_slr_records,
+    slr_qc_status,
 )
 from processors.slr_formats import mission_window_for_sat  # noqa: E402
 from processors.slr_processor import slr_to_dataframe  # noqa: E402
@@ -114,11 +115,13 @@ OLD_SLR_EXTENSIONS = {".npt", ".np", ".np2", ".crd"}
 # dataset/docs/metadata.md evidence/slr column contract (union schema; the
 # shipped per-satellite parquets vary slightly -- topex-poseidon lacks
 # target_name/window_length -- the staged files use one consistent layout)
-# plus the triage marker attached by _apply_slr_record_triage.
+# plus the triage markers attached by _apply_slr_record_triage:
+# source_zero_fields (Class B structural zeros) and qc_status (Class A
+# row-level rejections -- marked, never dropped; see physical_qc.slr_qc_status).
 SLR_EVIDENCE_COLUMNS = [
     "record_type", "epoch", "time_of_flight_s", "range_m", "sigma_m",
     "num_returns", "window_length", "station_id", "target_id", "target_name",
-    "source_zero_fields",
+    "source_zero_fields", "qc_status",
 ]
 SLR_NUMERIC_COLUMNS = {
     "time_of_flight_s", "range_m", "sigma_m", "num_returns", "window_length",
@@ -447,6 +450,12 @@ def stage_slr_for_sat(
         outside = int(mask.sum())
 
     out = merged.copy()
+    # qc_status: the triage's qc_rejected boolean, resolved into the shipped
+    # status vocabulary (cross_target / range_implausible / qc_rejected / ok;
+    # physical_qc.slr_qc_status is the single implementation).
+    out["qc_status"] = slr_qc_status(
+        out, qc_rejected=out["qc_rejected"] if "qc_rejected" in out.columns else None
+    )
     for column in SLR_EVIDENCE_COLUMNS:
         if column not in out.columns:
             out[column] = np.nan if column in SLR_NUMERIC_COLUMNS else None

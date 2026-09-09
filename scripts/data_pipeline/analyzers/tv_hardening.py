@@ -535,6 +535,45 @@ def deming_slope(x: np.ndarray, y: np.ndarray, sigma_x: float, sigma_y: float) -
     return float(2.0 * lam * sxy / (root - a_term))
 
 
+def _bootstrap_slope_ci(
+    x: np.ndarray,
+    y: np.ndarray,
+    sigma_x: float,
+    sigma_y: float,
+    estimator: str = "ols",
+    n_boot: int = 2000,
+    alpha: float = 0.05,
+    seed: int | None = None,
+) -> tuple[float, float]:
+    """Percentile bootstrap CI for the OLS or Deming slope (seeded, paired resample)."""
+    from benchmarking.experiment_params import BOOTSTRAP_SEED
+
+    rng = np.random.default_rng(BOOTSTRAP_SEED if seed is None else seed)
+    n = len(x)
+    slopes = np.empty(n_boot)
+    for b in range(n_boot):
+        idx = rng.integers(0, n, n)
+        xb, yb = x[idx], y[idx]
+        if np.var(xb) == 0:
+            slopes[b] = np.nan
+        elif estimator == "ols":
+            slopes[b] = np.polyfit(xb, yb, 1)[0]
+        else:
+            slopes[b] = deming_slope(xb, yb, sigma_x, sigma_y)
+    slopes = slopes[np.isfinite(slopes)]
+    if len(slopes) < n_boot / 2:
+        return float("nan"), float("nan")
+    lo = float(np.quantile(slopes, alpha / 2.0))
+    hi = float(np.quantile(slopes, 1.0 - alpha / 2.0))
+    return lo, hi
+
+
+# Magnitude bins of |x| (m) for the banded refits: the pooled slope is
+# variance-weighted by the far tail, so per-band slopes show where the
+# two estimators' scale relationship actually lives.
+SLOPE_MAGNITUDE_BANDS_M = ((0.0, 20.0), (20.0, 100.0), (100.0, 1000.0), (1000.0, float("inf")))
+
+
 def slope_comparison_rows(pairs: pd.DataFrame) -> pd.DataFrame:
     """OLS vs errors-in-variables slopes for the TLE-vs-orbit SMA-shift relation.
 
@@ -547,7 +586,15 @@ def slope_comparison_rows(pairs: pd.DataFrame) -> pd.DataFrame:
     - ``ols_attenuation_corrected_slope``: OLS undone with the classical
       measurement-error factor (1 + sigma_x^2 / Var(x));
     - ``deming_slope``: the errors-in-variables estimate with
-      lambda = (sigma_y/sigma_x)^2 from the pre-registered noise floors.
+      lambda = (sigma_y/sigma_x)^2 from the pre-registered noise floors;
+    - seeded percentile-bootstrap 95% CIs for the pooled OLS and Deming
+      slopes;
+    - ``fit_scope='pooled'`` plus one row per |x| magnitude band
+      (SLOPE_MAGNITUDE_BANDS_M) with per-band slope, Pearson r, and the
+      median y/x ratio -- the attenuation at the pre-registered 24 m x-noise
+      floor is negligible for the pooled fit (x variance ~5.3e6 m^2 vs
+      sigma_x^2 = 576 m^2), so the banded rows make the magnitude dependence
+      explicit instead of attributing the pooled slope to attenuation.
     """
     floors = SMA_SHIFT_NOISE_FLOOR_M
     sigma_x = floors["tle_median"]
@@ -559,33 +606,59 @@ def slope_comparison_rows(pairs: pd.DataFrame) -> pd.DataFrame:
     y = y[keep].to_numpy(dtype=float)
     if len(x) < 3:
         return pd.DataFrame()
-    ols_slope, ols_intercept = np.polyfit(x, y, 1)
-    var_x = float(np.var(x, ddof=1))
-    corrected = float(ols_slope) * (1.0 + sigma_x**2 / var_x) if var_x > 0 else float("nan")
-    deming = deming_slope(x, y, sigma_x, sigma_y)
-    deming_intercept = float(np.mean(y) - deming * np.mean(x)) if np.isfinite(deming) else float("nan")
-    return pd.DataFrame(
-        [
-            {
-                "sample_count": len(x),
-                "sigma_x_m": sigma_x,
-                "sigma_y_m": sigma_y,
-                "lambda_sigma_y2_over_sigma_x2": (sigma_y / sigma_x) ** 2,
-                "x_variance_m2": round(var_x, 3),
-                "ols_slope": round(float(ols_slope), 6),
-                "ols_intercept_m": round(float(ols_intercept), 4),
-                "ols_attenuation_corrected_slope": round(corrected, 6),
-                "deming_slope": round(deming, 6),
-                "deming_intercept_m": round(deming_intercept, 4),
-                "note": (
-                    "x = TLE bracketing SMA shift, y = orbit period-averaged SMA shift; "
-                    "sigmas are the pre-registered stable-window noise floors "
-                    "(REVIEW_FINDINGS 7.1.2); OLS y-on-x attenuates by "
-                    "Var(x_true)/(Var(x_true)+sigma_x^2)"
-                ),
-            }
-        ]
-    )
+
+    def _fit_row(scope: str, xb: np.ndarray, yb: np.ndarray) -> dict[str, float | int | str]:
+        ols_slope, ols_intercept = np.polyfit(xb, yb, 1)
+        var_x = float(np.var(xb, ddof=1))
+        corrected = float(ols_slope) * (1.0 + sigma_x**2 / var_x) if var_x > 0 else float("nan")
+        deming = deming_slope(xb, yb, sigma_x, sigma_y)
+        deming_intercept = float(np.mean(yb) - deming * np.mean(xb)) if np.isfinite(deming) else float("nan")
+        pearson = float(np.corrcoef(xb, yb)[0, 1]) if len(xb) >= 3 else float("nan")
+        ratio_mask = np.abs(xb) > 0
+        median_ratio = float(np.median(yb[ratio_mask] / xb[ratio_mask])) if ratio_mask.any() else float("nan")
+        ci_lo, ci_hi = (float("nan"), float("nan"))
+        d_lo, d_hi = (float("nan"), float("nan"))
+        if len(xb) >= 10:
+            ci_lo, ci_hi = _bootstrap_slope_ci(xb, yb, sigma_x, sigma_y, "ols")
+            d_lo, d_hi = _bootstrap_slope_ci(xb, yb, sigma_x, sigma_y, "deming")
+        return {
+            "fit_scope": scope,
+            "sample_count": len(xb),
+            "sigma_x_m": sigma_x,
+            "sigma_y_m": sigma_y,
+            "lambda_sigma_y2_over_sigma_x2": (sigma_y / sigma_x) ** 2,
+            "x_variance_m2": round(var_x, 3),
+            "ols_slope": round(float(ols_slope), 6),
+            "ols_intercept_m": round(float(ols_intercept), 4),
+            "ols_attenuation_corrected_slope": round(corrected, 6),
+            "ols_slope_ci95_low": round(ci_lo, 6),
+            "ols_slope_ci95_high": round(ci_hi, 6),
+            "deming_slope": round(deming, 6),
+            "deming_intercept_m": round(deming_intercept, 4),
+            "deming_slope_ci95_low": round(d_lo, 6),
+            "deming_slope_ci95_high": round(d_hi, 6),
+            "pearson_r": round(pearson, 4),
+            "median_ratio_y_over_x": round(median_ratio, 4),
+            "note": (
+                "x = TLE bracketing SMA shift, y = orbit period-averaged SMA shift; "
+                "sigmas are the pre-registered stable-window noise floors "
+                "(REVIEW_FINDINGS 7.1.2); OLS y-on-x attenuates by "
+                "Var(x_true)/(Var(x_true)+sigma_x^2); CI95 = seeded percentile "
+                "bootstrap (2000 resamples); band rows restrict |x| to the "
+                "fit_scope range (m); per-band Deming slopes are ill-conditioned "
+                "(the band x-spread approaches sigma_x, so lambda no longer "
+                "describes the error ratio) and are reported for completeness only"
+            ),
+        }
+
+    rows = [_fit_row("pooled", x, y)]
+    abs_x = np.abs(x)
+    for low, high in SLOPE_MAGNITUDE_BANDS_M:
+        mask = (abs_x >= low) & (abs_x < high)
+        if mask.sum() >= 3:
+            hi_label = "inf" if np.isinf(high) else f"{high:.0f}"
+            rows.append(_fit_row(f"band_{low:.0f}_{hi_label}m", x[mask], y[mask]))
+    return pd.DataFrame(rows)
 
 
 def tier_equivalence_tost_rows(

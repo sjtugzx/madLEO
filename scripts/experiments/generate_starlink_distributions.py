@@ -136,21 +136,32 @@ def tle_shell_distribution(tle: pd.DataFrame) -> pd.DataFrame:
 
 
 def ephemeris_state_distribution(parquet_path: Path, shell_by_sat: dict[str, str], batch_rows: int = 2_000_000) -> pd.DataFrame:
-    """Radius/speed distributions and 60 s cadence compliance (I5)."""
+    """Radius/speed distributions and 60 s cadence compliance (I5).
+
+    States flagged ``quality_flag == 'below_surface'`` (operator-published
+    predictions of actively deorbiting objects that continue below the
+    surface; 5,861 rows in the shipped release) are excluded from the
+    radius/speed statistics and counted in ``qc_flagged_rows``;
+    ``state_count`` stays the total shipped rows and cadence accounting
+    covers every state (publishing cadence is independent of the position
+    validity).
+    """
     import pyarrow.parquet as pq
 
     scopes: dict[str, dict[str, list]] = {}
 
     def _bucket(scope: str) -> dict[str, list]:
-        return scopes.setdefault(scope, {"radius": [], "speed": [], "sats": set()})
+        return scopes.setdefault(scope, {"radius": [], "speed": [], "sats": set(), "flagged": 0, "total": 0})
 
     last_epoch: dict[str, pd.Timestamp] = {}
     cadence_ok: dict[str, int] = {}
     cadence_total: dict[str, int] = {}
 
     parquet = pq.ParquetFile(parquet_path)
-    for batch in parquet.iter_batches(batch_size=batch_rows, columns=["sat_id", "epoch", "x_m", "y_m", "z_m", "vx_mps", "vy_mps", "vz_mps"]):
+    for batch in parquet.iter_batches(batch_size=batch_rows, columns=["sat_id", "epoch", "x_m", "y_m", "z_m", "vx_mps", "vy_mps", "vz_mps", "quality_flag"]):
         frame = batch.to_pandas()
+        flagged = frame["quality_flag"].eq("below_surface").to_numpy()
+        good = ~flagged
         radius = np.sqrt(frame["x_m"] ** 2 + frame["y_m"] ** 2 + frame["z_m"] ** 2) / 1000.0
         speed = np.sqrt(frame["vx_mps"] ** 2 + frame["vy_mps"] ** 2 + frame["vz_mps"] ** 2) / 1000.0
         epochs = pd.to_datetime(frame["epoch"], utc=True)
@@ -158,14 +169,18 @@ def ephemeris_state_distribution(parquet_path: Path, shell_by_sat: dict[str, str
         shells = sat_ids.map(shell_by_sat).fillna("other")
         for scope_name, mask in (("ALL", np.ones(len(frame), dtype=bool)),):
             bucket = _bucket(scope_name)
-            bucket["radius"].append(radius.to_numpy()[mask])
-            bucket["speed"].append(speed.to_numpy()[mask])
+            bucket["radius"].append(radius.to_numpy()[mask & good])
+            bucket["speed"].append(speed.to_numpy()[mask & good])
+            bucket["flagged"] += int((mask & flagged).sum())
+            bucket["total"] += int(mask.sum())
         for shell in ("43.0", "53.0", "53.2", "70", "97.6", "other"):
             mask = (shells == shell).to_numpy()
             if mask.any():
                 bucket = _bucket(shell)
-                bucket["radius"].append(radius.to_numpy()[mask])
-                bucket["speed"].append(speed.to_numpy()[mask])
+                bucket["radius"].append(radius.to_numpy()[mask & good])
+                bucket["speed"].append(speed.to_numpy()[mask & good])
+                bucket["flagged"] += int((mask & flagged).sum())
+                bucket["total"] += int(mask.sum())
         all_sats = sat_ids.to_numpy()
         _bucket("ALL")["sats"].update(all_sats.tolist())
         shell_values = shells.to_numpy()
@@ -206,7 +221,8 @@ def ephemeris_state_distribution(parquet_path: Path, shell_by_sat: dict[str, str
             {
                 "scope": scope,
                 "satellite_count": len(sats),
-                "state_count": int(radius.size),
+                "state_count": int(bucket["total"]),
+                "qc_flagged_rows": int(bucket["flagged"]),
                 "radius_median_km": round(float(np.median(radius)), 2),
                 "radius_min_km": round(float(radius.min()), 2),
                 "radius_max_km": round(float(radius.max()), 2),

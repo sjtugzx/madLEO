@@ -43,6 +43,7 @@ if str(_PIPELINE_ROOT) not in sys.path:
     sys.path.insert(0, str(_PIPELINE_ROOT))
 
 from benchmarking.config import REPO_ROOT, ensure_directory, resolve_repo_path  # noqa: E402
+from benchmarking.experiment_params import EARTH_RADIUS_KM  # noqa: E402
 from processors.physical_qc import (  # noqa: E402
     EARTH_MU_M3_PER_S2,
     PhysicalQCViolation,
@@ -724,6 +725,14 @@ def stage_starlink(output: Path) -> None:
     slice_start = pd.Timestamp("2024-11-26T06:00:00Z")
     slice_end = pd.Timestamp("2024-11-30T17:00:00Z")
     merged = merged[(merged["epoch"] >= slice_start) & (merged["epoch"] <= slice_end)]
+    # quality_flag: operator-published predictions of actively deorbiting
+    # objects continue below the surface (final review: 5,861 of 43.4M states,
+    # 3 objects).  Marked, never dropped -- consumers computing altitude or
+    # radius statistics filter quality_flag == 'below_surface'.
+    radius_m = np.sqrt(merged["x_m"] ** 2 + merged["y_m"] ** 2 + merged["z_m"] ** 2)
+    merged["quality_flag"] = np.where(
+        radius_m < EARTH_RADIUS_KM * 1000.0, "below_surface", ""
+    )
     _write_parquet(merged, dest / "ephemeris_state.parquet")
     print(f"  starlink: {len(merged)} rows, {merged['satellite_name'].nunique()} satellites", flush=True)
 
@@ -866,6 +875,9 @@ def _write_starlink_audits(ephemeris: pd.DataFrame, tle: pd.DataFrame, dest: Pat
     ):
         if df.empty:
             continue
+        flagged = (
+            int((df["quality_flag"] != "").sum()) if "quality_flag" in df.columns else 0
+        )
         schema_rows.append(
             {
                 "table": table,
@@ -874,7 +886,8 @@ def _write_starlink_audits(ephemeris: pd.DataFrame, tle: pd.DataFrame, dest: Pat
                 "required_fields_present": all(column in df.columns for column in required),
                 "epochs_utc": bool(df["epoch"].dt.tz is not None),
                 "duplicate_sat_epoch_rows": int(df.duplicated(subset=["sat_id", "epoch"]).sum()),
-                "quality_flags": "ok",
+                "quality_flag_rows": flagged,
+                "quality_flags": "ok" if flagged == 0 else f"ok ({flagged} rows flagged; see quality_flag column)",
             }
         )
     pd.DataFrame(schema_rows).to_csv(dest / "schema_audit.csv", index=False)

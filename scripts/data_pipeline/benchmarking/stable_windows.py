@@ -39,9 +39,20 @@ from typing import Iterable
 
 import pandas as pd
 
-WINDOW_HOURS = 30.0
-EXCLUSION_BUFFER_HOURS = 24.0
-SLR_MARGIN_DAYS = 1
+from benchmarking.experiment_params import (
+    ANALYSIS_WINDOW_POST_HOURS,
+    ANALYSIS_WINDOW_PRE_HOURS,
+    SLR_COVERAGE_MARGIN_DAYS,
+    STABLE_EXCLUSION_BUFFER_HOURS,
+)
+
+# P4 single source: the stable-window geometry derives from the shared
+# analysis-window parameters (event at start + 6 h, 30 h total), the SLR
+# coverage margin, and the canonical exclusion buffer; nothing here
+# re-defines a numeric policy value.
+WINDOW_HOURS = ANALYSIS_WINDOW_PRE_HOURS + ANALYSIS_WINDOW_POST_HOURS
+EXCLUSION_BUFFER_HOURS = STABLE_EXCLUSION_BUFFER_HOURS
+SLR_MARGIN_DAYS = int(SLR_COVERAGE_MARGIN_DAYS)
 ANNOTATION_LABEL_SOURCE = "tle_archive_mission_coverage_mining"
 
 STABLE_WINDOW_COLUMNS = [

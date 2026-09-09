@@ -9,9 +9,11 @@ together with **1,139 deterministic stable no-event windows** as negative
 controls and a **107-hour full-constellation Starlink operational slice**
 (43,361,358 predicted ephemeris states, no validated labels).
 
-This repository contains the released dataset itself, the complete
-reproducible pipeline that builds it from public provider archives, the
-technical-validation experiment suite, and the accompanying paper.
+This repository contains the complete reproducible pipeline that builds the
+dataset from public provider archives, together with the
+technical-validation experiment suite. The released dataset is openly
+available on Figshare at https://doi.org/10.6084/m9.figshare.33446503.v1
+under CC BY 4.0.
 
 ## Repository layout
 
@@ -48,19 +50,18 @@ mad-leo/
 │       └── generate_*.py     #   event response, stable windows, state
 │                             #   estimation/fusion, sigma model, distributions,
 │                             #   Starlink consistency, external benchmark,
-│                             #   paper figure builders (make_tv_figures.py)
+│                             #   figure builders (make_tv_figures.py)
 ├── configs/                  # versioned target/provider manifests (JSON)
 ├── requirements.txt          # pinned dependencies
 └── .env.example              # credential template (copy to .env)
 ```
 
-The paper sources (LaTeX, Nature *Scientific Data* format) live under
-`arxiv/MAD_LEO_paper/`; `arxiv/` is a git-ignored quarantine area, so the
-manuscript is not tracked in git.
-
 The released dataset is `dataset/` only — it ships to Figshare without any
-analysis tables. The statistical artifacts behind the paper's Technical
-Validation section live in `experiments/` and are published with the code.
+analysis tables. On the deposit, path separators are encoded as double
+underscores in the file names (the deposit stores a flat list); the mapping
+is documented in `docs__metadata.md` on the deposit. The statistical
+artifacts behind the Technical Validation analyses live in `experiments/`
+and are published with the code.
 Two directories are created at runtime and are git-ignored: `data/`
 (pipeline workspace: raw downloads + interim tables) and `results/`
 (experiment scratch output).
@@ -76,7 +77,10 @@ cp .env.example .env   # fill in credentials only if you plan to run acquisition
 ## Quickstart: validate the shipped dataset
 
 These experiments consume the shipped `dataset/` snapshots directly and
-need no credentials or prior pipeline run:
+need no credentials or prior pipeline run. To obtain the snapshots,
+download the Figshare deposit and place the files under `dataset/`,
+restoring the logical paths by replacing each `__` in a file name with a
+path separator.
 
 ```bash
 # Starlink shell/ephemeris distributions and TLE-ephemeris consistency
@@ -84,10 +88,6 @@ python scripts/experiments/run_experiments.py starlink-distributions
 
 # Per-target TLE / orbit / SLR distribution summaries + tier equivalence
 python scripts/experiments/run_experiments.py distribution-validation
-
-# The paper's technical-validation figures (reads experiments/validation,
-# experiments/starlink and dataset/, writes arxiv/MAD_LEO_paper/images/)
-python scripts/experiments/run_experiments.py paper-tv-figures
 ```
 
 Verify the shipped package integrity:
@@ -138,47 +138,10 @@ technical-validation table and figure:
 for e in event-response stable-windows state-estimates state-fusion \
          tv-hardening distribution-validation starlink-distributions \
          external-crossvalidation kozai-comparison core-label-tables \
-         provenance-map slr-crossformat-check slr-oc-audit; do
+         provenance-map slr-crossformat-check slr-oc-audit \
+         window-sensitivity attenuation-demo starlink-step-candidates; do
   python scripts/experiments/run_experiments.py $e
 done
 python scripts/experiments/run_experiments.py results-figures
 python scripts/experiments/run_experiments.py new-analysis-figures
-python scripts/experiments/run_experiments.py paper-tv-figures
 ```
-
-## The paper
-
-`arxiv/MAD_LEO_paper/` contains the LaTeX sources of the accompanying data
-descriptor (Nature *Scientific Data* format; git-ignored). Compile from that
-directory:
-
-```bash
-cd arxiv/MAD_LEO_paper
-pdflatex main && bibtex main && pdflatex main && pdflatex main
-```
-
-All technical-validation figures under `arxiv/MAD_LEO_paper/images/` (except
-the manually maintained Figure 1, `dataCollection.pdf`) are regenerated from
-the shipped dataset by `paper-tv-figures`.
-
-## Data sources and credentials
-
-All credentials are read from environment variables (`.env`, git-ignored;
-see `.env.example`): `SPACETRACK_ID/PASSWORD`, `CDSE_USERNAME/PASSWORD`,
-`EARTHDATA_USERNAME/PASSWORD`, `CDDIS_FTPS_EMAIL`. No credentials are
-stored in the repository. The private reviewer-provided TLE archive link
-is redacted from `configs/` and configured via `STARLINK_TLE_ARCHIVE_URL`.
-
-Annotation truth comes from International DORIS Service (IDS)
-mission-published maneuver histories; orbit evidence from CDDIS/PO.DAAC/
-CDSE; SLR from ILRS archives; TLE from public catalogs with Space-Track
-as authenticated fallback.
-
-## Claim boundaries
-
-Starlink ephemerides are operator-published **predictions**, never
-maneuver ground truth; the operational subset carries no labels by
-design. Labels are `event` / `no_event` / `ignore`, where `ignore` is a
-reserved value (no released window carries it). Confidence tiers (A/B/C)
-encode evidence completeness, not data quality. See
-`dataset/docs/metadata.md`.

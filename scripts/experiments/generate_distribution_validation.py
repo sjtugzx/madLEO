@@ -113,14 +113,24 @@ def orbit_state_distribution_summary(orbit_root: Path = EVIDENCE / "orbit") -> p
 
 
 def slr_distribution_summary(slr_root: Path = EVIDENCE / "slr") -> pd.DataFrame:
-    """Per-target SLR normal-point precision and return-count distributions."""
+    """Per-target SLR normal-point precision and return-count distributions.
+
+    Rows flagged ``qc_status != 'ok'`` (implausible range / cross-target
+    contamination; 20 rows in the shipped release) are excluded from the
+    statistics and counted in ``qc_flagged_rows``.
+    """
     rows = []
     for sat_id, frame in _iter_parquets(slr_root):
+        flagged = 0
+        if "qc_status" in frame.columns:
+            flagged = int((frame["qc_status"] != "ok").sum())
+            frame = frame[frame["qc_status"] == "ok"]
         sigma_mm = frame["sigma_m"] * 1000.0
         rows.append(
             {
                 "sat_id": sat_id,
                 "normal_point_count": len(frame),
+                "qc_flagged_rows": flagged,
                 "station_count": int(frame["station_id"].nunique()),
                 "sigma_median_mm": round(float(sigma_mm.median()), 3),
                 "sigma_iqr_mm": round(float(sigma_mm.quantile(0.75) - sigma_mm.quantile(0.25)), 3),

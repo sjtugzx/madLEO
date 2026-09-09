@@ -32,6 +32,7 @@ import pandas as pd
 
 from alignment.align_maneuver_evidence import _angle_delta
 from alignment.audit_reference_window_alignment import infer_orbit_product_spans, infer_slr_file_spans
+from benchmarking.experiment_params import BRACKET_BAND_HOURS
 from benchmarking.normalization import parse_raw_tle_file
 from processors import physical_qc as _physical_qc
 from processors.jason3_ogdr_processor import process_jason3_ogdr_file
@@ -49,7 +50,10 @@ from processors.timebase import sp3_time_scale_shift_seconds, sp3_time_system
 
 
 EARTH_MU_M3_PER_S2 = 3.986004418e14
-DEFAULT_MARGIN_HOURS = 12.0
+# P4 single source: the 12-h sampling margin IS the TLE bracket band width
+# (benchmarking.experiment_params.BRACKET_BAND_HOURS); aliased here only for
+# the keyword-arg sites that predate the shared module.
+DEFAULT_MARGIN_HOURS = BRACKET_BAND_HOURS
 MIN_BAND_SAMPLES = 2
 
 STATUS_COMPUTED = "computed"
@@ -720,7 +724,7 @@ def _orbit_response_for_window(context: dict, start: pd.Timestamp, end: pd.Times
         return {"orbit_status": status, "orbit_file_count": 0}
 
     frames = []
-    rotating_frame = False
+    rotating_frame: bool | None = None
     parse_error: str | None = None
     parse_failures: list[dict[str, str]] = []
     for row in selected:
@@ -742,7 +746,17 @@ def _orbit_response_for_window(context: dict, start: pd.Timestamp, end: pd.Times
             continue
         if not df.empty:
             frames.append(df)
-            rotating_frame = rotating
+            # Every selected file of one satellite must agree on the frame
+            # convention: concatenated rows are analyzed under ONE flag, so a
+            # mixed-frame selection must abort loudly, never average out.
+            if rotating_frame is None:
+                rotating_frame = rotating
+            elif rotating_frame != rotating:
+                raise ValueError(
+                    "mixed_frame_orbit_products: selected files disagree on "
+                    "rotating-frame convention (vis-viva SMA would be computed "
+                    "on inconsistent velocities)"
+                )
         else:
             # Ruling-17 counted file-level rejection: the loader refused
             # the file (physics identity failed) and returned empty +

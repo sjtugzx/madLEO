@@ -36,17 +36,28 @@ POD_SIGMA_M = 0.1
 
 
 def _rac_basis(orbit_row: pd.Series) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
-    """Radial/along-track/cross-track unit vectors from the POD state."""
+    """Radial/along-track/cross-track unit vectors from the POD state.
+
+    The shipped orbit velocities are Earth-fixed (rotating-frame) values
+    (finite differences of ITRF positions; see dataset/docs/metadata.md), so
+    the omega x r term is restored through the single shared correction
+    before the angular-momentum direction defines the along/cross axes.
+    Without it the basis tilts by ~omega/n (~4 deg for these orbits) and
+    mixes along-track into cross-track at the 5-7% level.
+    """
+    from processors.physical_qc import ecef_velocity_to_inertial
+
     try:
         r = np.array([orbit_row["orbit_x_m"], orbit_row["orbit_y_m"], orbit_row["orbit_z_m"]], dtype=float)
         v = np.array([orbit_row["orbit_vx_mps"], orbit_row["orbit_vy_mps"], orbit_row["orbit_vz_mps"]], dtype=float)
     except KeyError:
         return None
+    v_inertial = ecef_velocity_to_inertial(v.reshape(1, 3), r.reshape(1, 3))[0]
     r_norm = np.linalg.norm(r)
-    if r_norm == 0 or np.linalg.norm(v) == 0:
+    if r_norm == 0 or np.linalg.norm(v_inertial) == 0:
         return None
     radial = r / r_norm
-    cross = np.cross(r, v)
+    cross = np.cross(r, v_inertial)
     cross = cross / np.linalg.norm(cross)
     along = np.cross(cross, radial)
     return radial, along, cross

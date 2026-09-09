@@ -17,9 +17,9 @@ palette (Okabe-Ito), no gridlines, and outward ticks with top/right spines
 removed.
 
 Layout (panels are grouped thematically):
-- ``tv_dataset.pdf`` (2 x 3): mission-reported subset composition, evidence
-  coverage, tier structure, stable-window controls, SLR precision, and the
-  tier A/B equivalence checks.
+- ``tv_dataset.pdf`` (3 + 2): mission-reported subset composition, evidence
+  coverage, tier structure, stable-window controls, SLR precision. The bottom
+  row of two panels is stretched to full width so no grid cell stays empty.
 - ``tv_external_validation.pdf`` (1 x 3): benchmark match rates, match
   offsets, and response by match status.
 - ``tv_event_response.pdf`` (2 x 3): response distribution, TLE-vs-orbit
@@ -188,10 +188,27 @@ def fig_dataset():
     order = sat_order(ann.set_index("sat_id")["mission_reported_event_count"])
     y = np.arange(len(order))[::-1]
 
-    fig, gs = new_figure_2x3()
+    # 3 + 2 layout on a fixed inch grid: three equal panels on top, two
+    # full-width-stretched panels below (a plain 2 x 3 grid leaves an empty
+    # bottom-right cell).
+    FW, FH = 7.2, PANEL_H * 2 + 0.6
+    ml, mr, mt, mb = 0.62, 0.12, 0.30, 0.55   # margins (inches)
+    gx, gy = 0.62, 0.80                        # inter-panel gaps (inches)
+    pw = (FW - ml - mr - 2 * gx) / 3           # top-row panel width
+    bw = (FW - ml - mr - gx) / 2               # bottom-row panel width
+    ph = (FH - mt - mb - gy) / 2               # panel height
+    y_top, y_bot, hf = (FH - mt - ph) / FH, mb / FH, ph / FH
+    pos = {
+        (0, 0): [ml / FW, y_top, pw / FW, hf],
+        (0, 1): [(ml + pw + gx) / FW, y_top, pw / FW, hf],
+        (0, 2): [(ml + 2 * (pw + gx)) / FW, y_top, pw / FW, hf],
+        (1, 0): [ml / FW, y_bot, bw / FW, hf],
+        (1, 1): [(ml + bw + gx) / FW, y_bot, bw / FW, hf],
+    }
+    fig = plt.figure(figsize=(FW, FH))
 
     # (a) event count per satellite, with all-source-aligned subset
-    ax = fig.add_subplot(gs[0, 0])
+    ax = fig.add_axes(pos[(0, 0)])
     total = ann.set_index("sat_id")["mission_reported_event_count"].reindex(order)
     aligned = ev.set_index("sat_id")["all_source_aligned_count"].reindex(order)
     ax.barh(y, total, height=0.62, color=SKY, label="mission-reported")
@@ -206,7 +223,7 @@ def fig_dataset():
     panel(ax, "a", "Event windows per target")
 
     # (b) evidence coverage per satellite
-    ax = fig.add_subplot(gs[0, 1])
+    ax = fig.add_axes(pos[(0, 1)])
     h = 0.26
     for k, (col, lab, c) in enumerate([
         ("tle_covered_count", "TLE", BLUE),
@@ -223,7 +240,7 @@ def fig_dataset():
     panel(ax, "b", "Evidence coverage per target")
 
     # (c) tier composition
-    ax = fig.add_subplot(gs[0, 2])
+    ax = fig.add_axes(pos[(0, 2)])
     tp = (tier[tier.sat_id != "ALL"]
           .pivot_table(index="sat_id", columns="confidence_tier",
                        values="event_count", aggfunc="sum")
@@ -246,7 +263,7 @@ def fig_dataset():
     panel(ax, "c", "Confidence-tier composition")
 
     # (d) stable no-event control windows per satellite
-    ax = fig.add_subplot(gs[1, 0])
+    ax = fig.add_axes(pos[(1, 0)])
     st = pd.read_csv(VAL / "stable_windows_summary.csv")
     st_total = st.set_index("sat_id")["stable_window_count"].reindex(order)
     st_aligned = st.set_index("sat_id")["aligned_window_count"].reindex(order)
@@ -262,7 +279,7 @@ def fig_dataset():
     panel(ax, "d", "Stable control windows per target")
 
     # (e) SLR NP precision per target
-    ax = fig.add_subplot(gs[1, 1])
+    ax = fig.add_axes(pos[(1, 1)])
     slr = pd.read_csv(VAL / "slr_distribution_summary.csv").sort_values("sigma_median_mm")
     yy = np.arange(len(slr))
     ax.barh(yy, slr.sigma_median_mm, height=0.62, color=BLUE,
@@ -275,10 +292,31 @@ def fig_dataset():
     ax.set_xlim(0, 22)
     panel(ax, "e", "SLR normal-point precision")
 
-    # (f) tier comparison: 3-sigma coverage + sign agreement
-    ax = fig.add_subplot(gs[1, 2])
+    # The tier A/B quality-metrics panel moved to its own figure attached to
+    # the Tier-stratified checks subsection (fig_tier_comparison): it is a
+    # validation result of that experiment, not a composition/coverage panel.
+
+    save(fig, "tv_dataset")
+
+
+# ================================================================ TIER CHECK ==
+def fig_tier_comparison():
+    """Tier-stratified checks: orbit-based metrics (A/B only, computability
+    boundary) + TLE-response ECDFs for all three tiers."""
     tcov = pd.read_csv(VAL / "tier_sigma_coverage.csv").set_index("confidence_tier")
     tsgn = pd.read_csv(VAL / "tier_sign_agreement.csv").set_index("confidence_tier")
+    resp = pd.read_csv(VAL / "maneuver_event_response_validation.csv")
+    resp = resp.dropna(subset=["delta_sma_km"])
+    resp["abs_da_m"] = resp["delta_sma_km"].abs() * 1000.0
+
+    # Horizontal 1 x 2 layout: a tall 2 x 1 stack would fill a whole page
+    # column in the manuscript.
+    fig = plt.figure(figsize=(7.2, 2.6))
+    gs = gridspec.GridSpec(1, 2, figure=fig, wspace=0.32,
+                           left=0.06, right=0.995, top=0.90, bottom=0.17)
+
+    # (a) orbit-referenced quality metrics, tiers A/B (complete computable set)
+    ax = fig.add_subplot(gs[0, 0])
     metrics = [
         ("3$\\sigma$ coverage", tcov.within_3sigma_fraction, tcov.sample_count),
         ("sign agreement", tsgn.sign_agreement, tsgn.sample_count),
@@ -294,17 +332,43 @@ def fig_dataset():
                 label=f"Tier {tier_name}")
         ha, dx = ("right", -0.045) if k == 0 else ("left", 0.045)
         for xi, v in zip(xx + (k - 0.5) * w, vals):
-            ax.text(xi + dx, v, f"{v*100:.1f}%", ha=ha, va="center", fontsize=5.5)
+            ax.text(xi + dx, v, f"{v*100:.1f}%", ha=ha, va="center", fontsize=6)
     labels = [f"{m[0]}\n(n={m[2].get('A', 0)}/{m[2].get('B', 0)})" for m in metrics]
     ax.axhline(1.0, color="0.5", linewidth=0.5, linestyle=":")
     ax.set_xticks(xx, labels)
     ax.set_xlim(-0.55, 1.55)
     ax.set_ylim(0.85, 1.04)
     ax.set_ylabel("Fraction")
-    ax.legend(loc="upper right", frameon=False, ncol=2)
-    panel(ax, "f", "Tier A vs tier B checks")
+    ax.legend(loc="upper right", frameon=False, ncol=2, fontsize=7)
+    ax.text(0.5, 0.03, "tier C: no precise-orbit evidence, metric not computable",
+            transform=ax.transAxes, ha="center", va="bottom", fontsize=5.5,
+            color="0.35", style="italic")
+    panel(ax, "a")
 
-    save(fig, "tv_dataset")
+    # (b) TLE response magnitude ECDFs, all three tiers
+    ax = fig.add_subplot(gs[0, 1])
+    for tier_name in ["A", "B", "C"]:
+        vals = np.sort(resp.loc[resp.confidence_tier == tier_name, "abs_da_m"].to_numpy())
+        ax.step(np.concatenate([vals, [vals[-1]]]),
+                np.arange(1, len(vals) + 2) / (len(vals) + 1),
+                where="post", linewidth=1.1, color=TIER_COLORS[tier_name],
+                label=f"Tier {tier_name} (n={len(vals)})")
+    ax.set_xscale("log")
+    ax.set_xlim(0.05, 6e4)
+    ax.set_ylim(0, 1.02)
+    ax.set_xlabel("|TLE response| (m)")
+    ax.set_ylabel("ECDF")
+    med = resp.groupby("confidence_tier")["abs_da_m"].median()
+    for tier_name in ["A", "B", "C"]:
+        ax.axvline(med[tier_name], color=TIER_COLORS[tier_name],
+                   linewidth=0.6, linestyle=":", alpha=0.8)
+    ax.text(0.03, 0.62, "KS vs tier A:  D=0.13 (B),  D=0.30 (C)",
+            transform=ax.transAxes, fontsize=6, va="top")
+    ax.legend(loc="upper left", bbox_to_anchor=(0.0, 0.99), frameon=False,
+              fontsize=6.5, handlelength=1.4)
+    panel(ax, "b")
+
+    save(fig, "tv_tier_comparison")
 
 
 # ================================================================ FIGURE 3 ==
@@ -639,11 +703,14 @@ def fig_consistency():
     sc = sc[sc.sigma_eval_group == "all"].sort_values("k_sigma")
     xx = np.arange(3)
     w = 0.36
-    ax.bar(xx - w / 2, sc.nominal_coverage, width=w, color="0.75",
-           label="nominal (Gaussian)")
+    # The bounded quantity is the 3-D residual NORM, so the apples-to-apples
+    # nominal coverage is the Maxwell-norm reference (19.9/73.9/97.1%), not
+    # the 1-D Gaussian 68/95/99.7% (sigma_calibration_curve.csv carries both).
+    ax.bar(xx - w / 2, sc.nominal_coverage_maxwell_norm, width=w, color="0.75",
+           label="nominal (Maxwell norm)")
     ax.bar(xx + w / 2, sc.empirical_coverage, width=w, color=BLUE,
            label="empirical")
-    for xi, nom, emp in zip(xx, sc.nominal_coverage, sc.empirical_coverage):
+    for xi, nom, emp in zip(xx, sc.nominal_coverage_maxwell_norm, sc.empirical_coverage):
         ax.text(xi - w / 2, nom + 0.012, f"{nom*100:.0f}%", ha="center", fontsize=6)
         ax.text(xi + w / 2, emp + 0.012, f"{emp*100:.0f}%", ha="center", fontsize=6)
     ax.set_xticks(xx, [r"$1\sigma$", r"$2\sigma$", r"$3\sigma$"])
@@ -772,6 +839,7 @@ def main(argv: list[str] | None = None):
     fig_anatomy_a()
     fig_anatomy_b()
     fig_consistency()
+    fig_tier_comparison()
 
 
 if __name__ == "__main__":

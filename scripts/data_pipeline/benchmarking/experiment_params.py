@@ -71,6 +71,12 @@ BRACKET_BAND_HOURS = 12.0
 #: Margin (days) added on both sides of a window when auditing SLR coverage
 #: (sparse passes need a wider audit band than the dense orbit/TLE sources).
 SLR_COVERAGE_MARGIN_DAYS = 1.0
+#: Buffer (hours) excluding stable-window grid cells that fall within this
+#: distance of any event window's coverage audit span (window +/- SLR
+#: margin), so negative controls cannot share evidence with adjacent events.
+#: Equals the post-event arm: an event's SLR audit span reaches exactly
+#: window_end + 24 h, so 24 h fully shields the neighbor grid cell.
+STABLE_EXCLUSION_BUFFER_HOURS = 24.0
 #: Seed of the coverage-matched stable-window resampling (deterministic).
 STABLE_MATCHED_SEED = 42
 #: Seed of the bootstrap-resampling CI of headline statistics.

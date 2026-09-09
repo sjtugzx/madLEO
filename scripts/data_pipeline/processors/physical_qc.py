@@ -530,6 +530,67 @@ def assert_slr_records(
 
 
 # ---------------------------------------------------------------------------
+# SLR evidence qc_status column (shipped with the parquets)
+# ---------------------------------------------------------------------------
+
+# Per-row QC status shipped as the ``qc_status`` column of the released SLR
+# evidence parquets.  Rows are MARKED, never dropped (Ruling-17): the 20
+# range/cross-target rows found by the final review stay in the release with
+# an explicit status so consumers can filter without re-deriving the physics.
+QC_STATUS_OK = "ok"
+QC_STATUS_RANGE_IMPLAUSIBLE = "range_implausible"
+QC_STATUS_CROSS_TARGET = "cross_target"
+QC_STATUS_REJECTED = "qc_rejected"
+
+# Targets observed inside a LEO target's provider file that are known foreign
+# objects (MEO GNSS satellites).  Only provably-foreign names are listed;
+# permissive name variants of the file's own target (e.g. 'sentinel' inside
+# sentinel-3a files) stay ``ok``.
+KNOWN_FOREIGN_SLR_TARGETS = frozenset({"compassi6b"})
+
+
+def slr_qc_status(
+    frame: pd.DataFrame,
+    qc_rejected: np.ndarray | pd.Series | None = None,
+) -> pd.Series:
+    """Per-row ``qc_status`` string for a staged SLR evidence frame.
+
+    Status precedence (most specific diagnosis wins):
+
+    1. ``cross_target`` -- ``target_name`` is a known foreign object
+       (``KNOWN_FOREIGN_SLR_TARGETS``, e.g. COMPASS-I6B normal points inside
+       a sentinel-3a provider file);
+    2. ``range_implausible`` -- one-way ``range_m`` outside the shared
+       ``[SLR_RANGE_MIN_M, SLR_RANGE_MAX_M]`` band;
+    3. ``qc_rejected`` -- row flagged by the record triage
+       (``_apply_slr_record_triage`` boolean) for any other Class-A
+       assertion hit (TOF identity, epoch presence, mission span);
+    4. ``ok``.
+
+    The function is pure and deterministic over the shipped columns, so the
+    release staging path and any post-hoc patch of already-written parquets
+    compute identical values.  ``qc_rejected`` may be None (patch path:
+    only the range/target diagnoses are recomputed, which covers every
+    flagged row in the current release).
+    """
+    rng = pd.to_numeric(frame["range_m"], errors="coerce")
+    out_of_band = (rng < SLR_RANGE_MIN_M) | (rng > SLR_RANGE_MAX_M)
+    status = pd.Series(
+        np.where(out_of_band.to_numpy(dtype=bool, na_value=False), QC_STATUS_RANGE_IMPLAUSIBLE, QC_STATUS_OK),
+        index=frame.index,
+        dtype=object,
+    )
+    if "target_name" in frame.columns:
+        names = frame["target_name"].astype("string").str.strip().str.lower()
+        foreign = names.isin(KNOWN_FOREIGN_SLR_TARGETS).to_numpy(dtype=bool, na_value=False)
+        status = status.mask(pd.Series(foreign, index=frame.index), QC_STATUS_CROSS_TARGET)
+    if qc_rejected is not None:
+        rejected = pd.Series(np.asarray(qc_rejected, dtype=bool), index=frame.index)
+        status = status.mask(rejected & status.eq(QC_STATUS_OK), QC_STATUS_REJECTED)
+    return status
+
+
+# ---------------------------------------------------------------------------
 # TLE epoch self-consistency
 # ---------------------------------------------------------------------------
 

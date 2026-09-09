@@ -17,6 +17,7 @@ from pathlib import Path
 import pandas as pd
 
 from analyzers.event_response import (
+    DEFAULT_MARGIN_HOURS,
     PER_WINDOW_COLUMNS,
     SUMMARY_COLUMNS,
     compute_target_responses,
@@ -38,7 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--raw-root", default=DEFAULT_RAW_ROOT, help="Root of raw per-target source directories")
     parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR, help="Directory for the response CSV outputs")
     parser.add_argument("--include", nargs="+", default=None, help="Restrict to these sat_ids")
-    parser.add_argument("--margin-hours", type=float, default=12.0, help="Pre/post window sampling margin in hours")
+    parser.add_argument("--margin-hours", type=float, default=DEFAULT_MARGIN_HOURS, help="Pre/post window sampling margin in hours (default: the canonical TLE bracket band)")
     return parser.parse_args()
 
 

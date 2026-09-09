@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T03:34:55Z",
+  "generated_at": "2026-09-07T02:32:05Z",
   "method": "AST write-site extraction (to_csv/write_text/shutil.copy destinations resolved through literals, assignments, and module constants) over the modules registered in the run_experiments and process dispatchers; files claimed by no registered command are listed as orphan",
   "dispatchers": {
     "scripts/experiments/run_experiments.py": {
